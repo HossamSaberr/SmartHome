@@ -13,7 +13,7 @@ public abstract class Device {
         this.isOn = false;
     }
 
-    protected String deviceName() {
+    public String deviceName() {
         return Type;
     }
 

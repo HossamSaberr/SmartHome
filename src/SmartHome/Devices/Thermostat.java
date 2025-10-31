@@ -25,6 +25,6 @@ public class Thermostat extends Device implements Adjustable {
     }
 
     public String getStatus() {
-        return Room + " [" + deviceName() + "] Status - power: " + (isOn ? "ON" : "OFF") + ", temp: " + temperature + "°C";
+        return "System " + " [" + deviceName() + "] with id " + id + " for "+ Room + " => Status - power: " + (isOn ? "ON" : "OFF") + ", temp: " + temperature + "°C";
     }
 }

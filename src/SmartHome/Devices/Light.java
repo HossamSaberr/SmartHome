@@ -25,6 +25,6 @@ public class Light extends Device implements Adjustable {
     }
 
     public String getStatus() {
-        return Room + " [" + deviceName() + "] Status - power: " + (isOn ? "ON" : "OFF") + ", brightness: " + brightness_lvl + "%";
+        return "System " + " [" + deviceName() + "] with id " + id + " for "+ Room + " => Status - power: " + (isOn ? "ON" : "OFF") + ", brightness: " + brightness_lvl + "%";
     }
 }

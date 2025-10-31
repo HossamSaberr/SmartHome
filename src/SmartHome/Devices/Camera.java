@@ -39,6 +39,6 @@ public class Camera extends Device implements Recordable {
     }
 
     public String getStatus() {
-        return Room + " [" + deviceName() + "] Status - power: " + (isOn ? "ON" : "OFF") + ", recording: " + (recording ? "YES" : "NO");
+        return "System " + " [" + deviceName() + "] with id " + id + " for "+ Room + " => Status - power: " + (isOn ? "ON" : "OFF") + ", recording: " + (recording ? "YES" : "NO");
     }
 }

@@ -26,6 +26,10 @@ public class HomeController {
         return null;
     }
 
+    public Device getDeviceByID(String id) {
+        return find(id);
+    }
+
     public void turnOn(String id) {
         Device d = find(id);
         if (d == null) {
@@ -91,6 +95,51 @@ public class HomeController {
         else {
             System.out.println(d.Room + " does not support record.");
         }
+    }
+
+    public String listAllLightsStatuses() {
+        StringBuilder sb = new StringBuilder();
+        boolean found = false;
+        for (Device d : devices) {
+            if(d.deviceName() == "Light") {
+                sb.append(d.getStatus()).append("\n");
+                found = true;
+            }
+        }
+        if(found)
+            return sb.toString();
+        else
+            return "There is no Light System Yet.\n";
+    }
+
+    public String listAllCameraStatuses() {
+        StringBuilder sb = new StringBuilder();
+        boolean found = false;
+        for (Device d : devices) {
+            if(d.deviceName() == "Camera") {
+                sb.append(d.getStatus()).append("\n");
+                found = true;
+            }
+        }
+        if(found)
+            return sb.toString();
+        else
+            return "There is no Camera System Yet.\n";
+    }
+
+    public String listAllThermostatsStatuses() {
+        StringBuilder sb = new StringBuilder();
+        boolean found = false;
+        for (Device d : devices) {
+            if(d.deviceName() == "Thermostat") {
+                sb.append(d.getStatus()).append("\n");
+                found = true;
+            }
+        }
+        if(found)
+            return sb.toString();
+        else
+            return "There is no Thermostat System Yet.\n";
     }
 
     public String listAllDevicesStatuses() {
