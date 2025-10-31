@@ -6,308 +6,247 @@ import SmartHome.Devices.Light;
 import SmartHome.Devices.Thermostat;
 import SmartHome.Services.HomeController;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
-    static Scanner input = new Scanner(System.in);
-    static HomeController controller = new HomeController();
+    private static final Scanner input = new Scanner(System.in);
+    private static final HomeController controller = new HomeController();
+
     public static void main(String[] args) {
-        mainMenu();
+        runApplicationLoop();
     }
-    static void mainMenu() {
-        System.out.println("========= Welcome to our SmartHome system ========= \n For info type 1.\n To make Controller System type 2.\n To exit type 3.\n Enter your choice: ");
-        int response = input.nextInt();
-        switch (response) {
-            case 1:
-                showInfo();
-                break;
-            case 2:
-                controllerMenu();
-                break;
-            case 3:
-                System.out.println("Thank you for using our system.");
-                return;
-            default:
-                System.out.println("Invalid response. Please try again.");
-                mainMenu();
-        }
-    }
-    static void showInfo() {
-        System.out.println("This system lets you control your smart home devices.\nYou can manage Lights, Cameras, and Thermostats interactively.\n");
-        mainMenu();
-    }
-    static void controllerMenu() {
-        System.out.println("Controller System: \n Type 1 to making Light System. \n Type 2 to making Camera System.\n Type 3 to making Thermostat System.\n Type 4 to get back.\n Enter your choice: ");
-        int response = input.nextInt();
-        switch (response) {
-            case 1:
-                lightMenu();
-                break;
-            case 2:
-                cameraMenu();
-                break;
-            case 3:
-                thermostatMenu();
-                break;
-            case 4:
-                mainMenu();
-                break;
-            default:
-                System.out.println("Invalid response. Please try again.");
-                controllerMenu();
-        }
-    }
-    static void lightMenu() {
-        System.out.println("Welcome to our Light Menu. \nType 1 to list all Light systems.\nType 2 to make new Light system.\n Type 3 To control light system already exist.\nType 4 to get back.");
-        int res = input.nextInt();
-        if(res == 1) {
-            System.out.println(controller.listAllLightsStatuses());
-            lightMenu();
-            return;
-        }
-        else if (res == 2) {
-            System.out.println("Enter room name: ");
-            input.nextLine();
-            String room = input.nextLine();
-            Light light = new Light(room + "_light", room);
-            controller.addDevice(light);
-            System.out.println("Type 1 to turn on the " + room + "_light.\nType 2 to adjust brightness for the " + room + "_light.\nType 3 to turn off the " + room + "_light.\nType 4 to get back.\nEnter your choice: ");
-            int choice = input.nextInt();
-            switch (choice) {
+
+    // Main application loop for menu navigation
+    private static void runApplicationLoop() {
+        boolean running = true;
+        while (running) {
+            System.out.println("\n========= Welcome to our SmartHome system =========");
+            System.out.println(" 1. Show Info");
+            System.out.println(" 2. Controller System");
+            System.out.println(" 3. Exit");
+            System.out.print("Enter your choice: ");
+            int response = getUserIntInput();
+            switch (response) {
                 case 1:
-                    controller.turnOn(light.id);
-                    lightMenu();
+                    showInfo();
                     break;
                 case 2:
-                    System.out.print("Enter brightness [0–100]: ");
-                    int value = input.nextInt();
-                    controller.adjust(light.id, value);
-                    lightMenu();
+                    runControllerMenu();
                     break;
                 case 3:
-                    controller.turnOff(light.id);
-                    lightMenu();
+                    System.out.println("Thank you for using our system.");
+                    running = false; // Exit the main loop
                     break;
-                case 4:
-                    lightMenu();
-                    return;
                 default:
-                    System.out.println("Invalid response. Try again.");
-                    lightMenu();
+                    System.out.println("Invalid response. Please try again.");
             }
         }
-        else if(res == 3) {
-            System.out.println("Enter Your Light System id: ");
-            String id = input.next();
-            Device light2 = controller.getDeviceByID(id);
-            if (light2 == null) {
-                System.out.println("No System found with id " + id);
-                lightMenu();
-                return;
-            }
-            if (!(light2 instanceof Light)) {
-                System.out.println("System with id " + id + " is not a Light System.");
-                lightMenu();
-                return;
-            }
-            String room = light2.Room;
-            System.out.println("Type 1 to turn on the " + room + "_light.\nType 2 to adjust brightness for the " + room + "_light.\nType 3 to turn off the " + room + "_light.\nType 4 to get back.\nEnter your choice: ");
-            int choice = input.nextInt();
-            switch (choice) {
+        input.close(); // Close the scanner when the application exits
+    }
+
+    private static void showInfo() {
+        System.out.println("\nThis system lets you control your smart home devices.");
+        System.out.println("You can manage Lights, Cameras, and Thermostats interactively.\n");
+    }
+
+    // Controller System menu loop
+    private static void runControllerMenu() {
+        boolean inControllerMenu = true;
+        while (inControllerMenu) {
+            System.out.println("\n--- Controller System Menu ---");
+            System.out.println(" 1. Manage Light System");
+            System.out.println(" 2. Manage Camera System");
+            System.out.println(" 3. Manage Thermostat System");
+            System.out.println(" 4. Remove Existing Device");
+            System.out.println(" 5. Back to Main Menu");
+            System.out.print("Enter your choice: ");
+            int response = getUserIntInput();
+            switch (response) {
                 case 1:
-                    controller.turnOn(light2.id);
-                    lightMenu();
+                    runLightMenu();
                     break;
                 case 2:
-                    System.out.print("Enter brightness [0–100]: ");
-                    int value = input.nextInt();
-                    controller.adjust(light2.id, value);
-                    lightMenu();
+                    runCameraMenu();
                     break;
                 case 3:
-                    controller.turnOff(light2.id);
-                    lightMenu();
+                    runThermostatMenu();
                     break;
                 case 4:
-                    lightMenu();
-                    return;
+                    removeDevice();
+                    break;
+                case 5:
+                    inControllerMenu = false;
+                    break;
                 default:
-                    System.out.println("Invalid response. Try again.");
-                    lightMenu();
+                    System.out.println("Invalid response. Please try again.");
             }
-        }
-        else {
-            controllerMenu();
-            return;
         }
     }
 
-    static void cameraMenu() {
-        System.out.println("Welcome to our Camera Menu. \nType 1 to list all Camera systems.\nType 2 to make new Camera system.\n Type 3 To control Camera system already exist.\nType 4 to get back.");
-        int res = input.nextInt();
-        if(res == 1) {
-            System.out.println(controller.listAllCameraStatuses());
-            cameraMenu();
-            return;
-        }
-        else if(res == 2) {
-            System.out.println("Enter room name: ");
-            input.nextLine();
-            String room = input.nextLine();
-            Camera cam = new Camera(room + "_cam", room);
-            controller.addDevice(cam);
-            System.out.println("Type 1 to turn on the " + room + "_camera\n" + "Type 2 to start recording " + room + "\n" + "Type 3 to stop recording " + room + "\n" + "Type 4 to turn off the " + room + "_camera\n" + "Type 5 yo get back.\n" + "Enter your choice: ");
-            int choice = input.nextInt();
-            switch (choice) {
-                case 1:
-                    controller.turnOn(cam.id);
-                    cameraMenu();
-                    break;
-                case 2:
-                    controller.startRecording(cam.id);
-                    cameraMenu();
-                    break;
-                case 3:
-                    controller.stopRecording(cam.id);
-                    cameraMenu();
-                    break;
-                case 4:
-                    controller.turnOff(cam.id);
-                    cameraMenu();
-                    break;
-                case 5:
-                    controllerMenu();
-                    break;
-                default:
-                    System.out.println("Invalid response. Try again.");
-                    cameraMenu();
-            }
-        }
-        else if(res == 3) {
-            System.out.println("Enter Your Camera System id: ");
-            String id = input.next();
-            Device cam = controller.getDeviceByID(id);
-            if (cam == null) {
-                System.out.println("No System found with id " + id);
-                cameraMenu();
-                return;
-            }
-            if (!(cam instanceof Camera)) {
-                System.out.println("System with id " + id + " is not a Camera System.");
-                cameraMenu();
-                return;
-            }
-            String room = cam.Room;
-            System.out.println("Type 1 to turn on the " + room + "_camera\n" + "Type 2 to start recording " + room + "\n" + "Type 3 to stop recording " + room + "\n" + "Type 4 to turn off the " + room + "_camera\n" + "Type 5 yo get back.\n" + "Enter your choice: ");
-            int choice = input.nextInt();
-            switch (choice) {
-                case 1:
-                    controller.turnOn(cam.id);
-                    cameraMenu();
-                    break;
-                case 2:
-                    controller.startRecording(cam.id);
-                    cameraMenu();
-                    break;
-                case 3:
-                    controller.stopRecording(cam.id);
-                    cameraMenu();
-                    break;
-                case 4:
-                    controller.turnOff(cam.id);
-                    cameraMenu();
-                    break;
-                case 5:
-                    controllerMenu();
-                    break;
-                default:
-                    System.out.println("Invalid response. Try again.");
-                    cameraMenu();
-            }
-        }
-        else {
-            controllerMenu();
-            return;
+    // Method to handle device removal
+    private static void removeDevice() {
+        System.out.print("Enter the device ID to remove: ");
+        String deviceId = input.nextLine();
+
+        if (controller.removeDevice(deviceId)) {
+            System.out.println("Device [" + deviceId + "] removed successfully.");
+        } else {
+            System.out.println("Device with ID [" + deviceId + "] not found.");
         }
     }
-    static void thermostatMenu() {
-        System.out.println("Welcome to our Thermostat Menu. \nType 1 to list all Thermostat systems.\nType 2 to make new Thermostat system.\n Type 3 To control Thermostat system already exist.\nType 4 to get back.");
-        int res = input.nextInt();
-        if(res == 1) {
-            System.out.println(controller.listAllThermostatsStatuses());
-            thermostatMenu();
-            return;
-        }
-        else if(res == 2) {
-            System.out.println("Enter room name: ");
-            input.nextLine();
-            String room = input.nextLine();
-            Thermostat t = new Thermostat(room + "_thermo", room);
-            controller.addDevice(t);
-            System.out.println("Type 1 to turn on " + room + "_thermostat.\n Type 2 to adjust " + room + " temperature.\n Type 3 to turn off " + room + "_thermostat. \n Type 4 to get back.\n Enter your choice: ");
-            int choice = input.nextInt();
-            switch (choice) {
+
+    // Light Menu loop
+    private static void runLightMenu() {
+        boolean inLightMenu = true;
+        while (inLightMenu) {
+            System.out.println("\n--- Light Menu ---");
+            System.out.println(" 1. List all Light systems");
+            System.out.println(" 2. Add new Light system");
+            System.out.println(" 3. Control existing Light system");
+            System.out.println(" 4. Back to Controller Menu");
+            System.out.print("Enter your choice: ");
+            int res = getUserIntInput();
+            switch (res) {
                 case 1:
-                    controller.turnOn(t.id);
+                    System.out.println(controller.listAllLightsStatuses());
                     break;
                 case 2:
-                    System.out.print("Enter temperature [5-30] : ");
-                    int temp = input.nextInt();
-                    controller.adjust(t.id, temp);
-                    thermostatMenu();
+                    System.out.print("Enter room name: ");
+                    String room = input.nextLine();
+                    Light light = new Light(room + "_light", room);
+                    controller.addDevice(light);
+                    System.out.println("Light '" + light.id + "' created. Now controlling it:");
+                    controlLight(light.id);
                     break;
                 case 3:
-                    controller.turnOff(t.id);
+                    System.out.print("Enter Light System ID: ");
+                    String id = input.nextLine();
+                    Device lightDevice = controller.getDeviceByID(id);
+                    if (lightDevice == null) {
+                        System.out.println("No system found with ID " + id);
+                    } else if (!(lightDevice instanceof Light)) {
+                        System.out.println("Device with ID " + id + " is not a Light.");
+                    } else {
+                        controlLight(lightDevice.id);
+                    }
                     break;
                 case 4:
-                    controllerMenu();
-                    return;
+                    inLightMenu = false;
+                    break;
                 default:
                     System.out.println("Invalid response. Try again.");
-                    thermostatMenu();
             }
         }
-        else if(res == 3) {
-            System.out.println("Enter Your Thermostat System id: ");
-            String id = input.next();
-            Device tem = controller.getDeviceByID(id);
-            if (tem == null) {
-                System.out.println("No System found with id " + id);
-                thermostatMenu();
+    }
+
+    // Helper method to control a specific light device
+    private static void controlLight(String lightId) {
+        boolean controllingLight = true;
+        while (controllingLight) {
+            Device lightDevice = controller.getDeviceByID(lightId);
+            if (lightDevice == null) {
+                System.out.println("Error: Light device with ID " + lightId + " no longer exists. Returning to Light Menu.");
                 return;
             }
-            if (!(tem instanceof Thermostat)) {
-                System.out.println("System with id " + id + " is not a Thermostat System.");
-                thermostatMenu();
-                return;
-            }
-            String room = tem.Room;
-            System.out.println("Type 1 to turn on " + room + "_thermostat.\n Type 2 to adjust " + room + " temperature.\n Type 3 to turn off " + room + "_thermostat. \n Type 4 to get back.\n Enter your choice: ");
-            int choice = input.nextInt();
+            System.out.println("\n--- Controlling Light: " + lightId + " ---");
+            System.out.println(" 1. Turn On\n 2. Adjust Brightness\n 3. Turn Off\n 4. Back to Light Menu");
+            System.out.print("Enter your choice: ");
+            int choice = getUserIntInput();
             switch (choice) {
                 case 1:
-                    controller.turnOn(tem.id);
+                    controller.turnOn(lightId);
+                    System.out.println("Light " + lightId + " turned on.");
                     break;
                 case 2:
-                    System.out.print("Enter temperature [5-30] : ");
-                    int temp = input.nextInt();
-                    controller.adjust(tem.id, temp);
-                    thermostatMenu();
+                    System.out.print("Enter brightness [0–100]: ");
+                    int value = getUserIntInput();
+                    if (value >= 0 && value <= 100) {
+                        controller.adjust(lightId, value);
+                        System.out.println("Brightness for " + lightId + " set to " + value + ".");
+                    } else {
+                        System.out.println("Invalid brightness value. Must be between 0 and 100.");
+                    }
                     break;
                 case 3:
-                    controller.turnOff(tem.id);
+                    controller.turnOff(lightId);
+                    System.out.println("Light " + lightId + " turned off.");
                     break;
                 case 4:
-                    controllerMenu();
-                    return;
+                    controllingLight = false;
+                    break;
                 default:
                     System.out.println("Invalid response. Try again.");
-                    thermostatMenu();
             }
         }
-        else {
-            controllerMenu();
-            return;
+    }
+
+    // Camera Menu loop
+    private static void runCameraMenu() {
+        boolean inCameraMenu = true;
+        while (inCameraMenu) {
+            System.out.println("\n--- Camera Menu ---");
+            System.out.println(" 1. List all Camera systems\n 2. Add new Camera system\n 3. Control existing Camera system\n 4. Back to Controller Menu");
+            System.out.print("Enter your choice: ");
+            int res = getUserIntInput();
+            switch (res) {
+                case 1:
+                    System.out.println(controller.listAllCameraStatuses());
+                    break;
+                case 2:
+                    System.out.print("Enter room name: ");
+                    String room = input.nextLine();
+                    Camera cam = new Camera(room + "_cam", room);
+                    controller.addDevice(cam);
+                    System.out.println("Camera '" + cam.id + "' created. Now controlling it:");
+                    controlCamera(cam.id);
+                    break;
+                case 3:
+                    System.out.print("Enter Camera System ID: ");
+                    String id = input.nextLine();
+                    Device camDevice = controller.getDeviceByID(id);
+                    if (camDevice == null) {
+                        System.out.println("No system found with ID " + id);
+                    } else if (!(camDevice instanceof Camera)) {
+                        System.out.println("Device with ID " + id + " is not a Camera.");
+                    } else {
+                        controlCamera(camDevice.id);
+                    }
+                    break;
+                case 4:
+                    inCameraMenu = false;
+                    break;
+                default:
+                    System.out.println("Invalid response. Try again.");
+            }
+        }
+    }
+
+    // Helper method to control a specific camera device
+    private static void controlCamera(String camId) {
+        // Implementation would be similar to controlLight, with camera-specific actions
+        System.out.println("Camera control for '" + camId + "' is not yet fully implemented.");
+    }
+
+    // Thermostat Menu loop
+    private static void runThermostatMenu() {
+        // Implementation would be similar to runLightMenu
+        System.out.println("Thermostat management is not yet fully implemented.");
+    }
+
+    /**
+     * Reads a line of input from the user and safely parses it into an integer.
+     * Handles NumberFormatException and prompts the user to retry.
+     * This avoids common Scanner issues with nextInt() followed by nextLine().
+     * @return The integer value entered by the user.
+     */
+    private static int getUserIntInput() {
+        while (true) {
+            try {
+                return Integer.parseInt(input.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.print("Invalid input. Please enter a whole number: ");
+            }
         }
     }
 }

@@ -150,3 +150,10 @@ public class HomeController {
         return sb.toString();
     }
 }
+
+
+public boolean removeDevice(String id) {
+        // removeIf returns true if at least one element was removed.
+        // This efficiently finds and removes the device in a single pass.
+        return devices.removeIf(d -> d.id.equals(id));
+    }
