@@ -1,6 +1,8 @@
 package SmartHome.Devices;
 
-public abstract class Device {
+import java.io.Serializable;
+
+public abstract class Device implements Serializable {
     public String id;
     public String Room;
     public String Type;
@@ -11,6 +13,22 @@ public abstract class Device {
         this.Room = room;
         this.Type = type;
         this.isOn = false;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getRoom() {
+        return Room;
+    }
+
+    public String getType() {
+        return Type;
+    }
+
+    public boolean isOn() {
+        return isOn;
     }
 
     protected String deviceName() {
