@@ -15,6 +15,7 @@ public abstract class Device implements Serializable {
         this.isOn = false;
     }
 
+<<<<<<< HEAD
     public String getId() {
         return id;
     }
@@ -32,6 +33,9 @@ public abstract class Device implements Serializable {
     }
 
     protected String deviceName() {
+=======
+    public String deviceName() {
+>>>>>>> 411b6784b78f247d6c6bcf5ec2422392884056d3
         return Type;
     }
 
