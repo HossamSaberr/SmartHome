@@ -1,8 +1,6 @@
 package SmartHome.Devices;
 
-import java.io.Serializable;
-
-public abstract class Device implements Serializable {
+public abstract class Device {
     public String id;
     public String Room;
     public String Type;
@@ -15,7 +13,20 @@ public abstract class Device implements Serializable {
         this.isOn = false;
     }
 
-<<<<<<< HEAD
+    public String deviceName() {
+        return Type;
+    }
+
+    public void turnOn() {
+        if (!isOn) {
+            isOn = true;
+            System.out.println(Room + " " + deviceName() + " is now ON.");
+        }
+        else {
+            System.out.println(Room + " " + deviceName() + " was already ON.");
+        }
+    }
+
     public String getId() {
         return id;
     }
@@ -30,23 +41,6 @@ public abstract class Device implements Serializable {
 
     public boolean isOn() {
         return isOn;
-    }
-
-    protected String deviceName() {
-=======
-    public String deviceName() {
->>>>>>> 411b6784b78f247d6c6bcf5ec2422392884056d3
-        return Type;
-    }
-
-    public void turnOn() {
-        if (!isOn) {
-            isOn = true;
-            System.out.println(Room + " " + deviceName() + " is now ON.");
-        }
-        else {
-            System.out.println(Room + " " + deviceName() + " was already ON.");
-        }
     }
 
     public void turnOff() {

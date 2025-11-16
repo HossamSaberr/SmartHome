@@ -21,6 +21,19 @@ public class HomeServices {
             System.out.println("Added Successfully.\n");
     }
 
+    public boolean removeDevice(String id) {
+        Device removed = devices.remove(id);
+        if (removed != null) {
+            System.out.println("Device [" + id + "] removed successfully.");
+            return true;
+        }
+        else {
+            System.out.println("No device with ID [" + id + "] found.");
+            return false;
+        }
+    }
+
+
     public Device find(String id) {
         for (Map.Entry<String, Device> d : devices.entrySet()) {
             if (d.getKey().equals(id)) {
